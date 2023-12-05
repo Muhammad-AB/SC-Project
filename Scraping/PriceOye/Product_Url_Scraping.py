@@ -94,6 +94,7 @@ def main(search_term):
 
 driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
 
+
 main("wireless earbuds")
 
 #driver.close()
