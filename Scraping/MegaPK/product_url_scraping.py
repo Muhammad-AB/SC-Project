@@ -1,11 +1,27 @@
+# Script: Product URL Scraper
+# Author: Muhammad Abdul Basit
+# Date: 16/12/2023
+
+# Script to generate and extract product URLs for a given search term and store them in a CSV file
+# Uses Selenium, BeautifulSoup, and ChromeDriverManager for web scraping
+
+# Importing required libraries
 from selenium import webdriver   # basic driver type
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import csv 
 
 
-
 def get_search_url(search_term):
+    """
+    Function to generate the search URL and retrieve total pages
+
+    Args:
+        search_term (str): Search term for generating the URL
+
+    Returns:
+        list: A list containing the generated search URL and total pages
+    """
 
     #Generate a url from search term
     print("\nEntered in get_url function\n")
@@ -18,6 +34,7 @@ def get_search_url(search_term):
     url = base_url.format (search_term)
     print("URL is",url)
 
+    # Retrieve total pages
     driver.get(url)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     try:
@@ -38,27 +55,30 @@ def get_search_url(search_term):
 
 
 def extract_product_url(url, t_pages):
+    """
+    Function to extract product URLs from the search results pages
+    
+    Args:
+        url (str): Search URL with placeholders for page numbers
+        t_pages (int): Total number of pages in the search results
+
+    Returns:
+        list: List of product URLs
+    """
 
     final_product_links = []    #Array in which all the url are going to be inserted
 
     i = 1
-
     for page in range(1, t_pages+1):
 
         print(i,") Entered extract url function")
         i+=1
 
-        #print("\nHI\n")
         driver.get(url.format(page))
-        #print("\nHI\n")
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        #print("\nSoup : \n",soup)
-        #soup = soup.prettify()
-        #print("\nPrettify Soup : \n",soup)
         
         productlist = soup.find('div', class_="product-grid-div")
-        # print("Results are:",productlist)
 
         productlist = productlist.find_all('div', {'id': 'lap_name_div'})
         # href = a_tag['href']
@@ -77,6 +97,15 @@ def extract_product_url(url, t_pages):
 
 
 def enter_urls_in_csv(final_product_links):
+    """
+    Function to enter product URLs in a CSV file
+    
+    Args:
+        final_product_links (list): List of product URLs
+
+    Returns:
+        None
+    """
 
     print("Opening csv")
     with open('Apple Airpods_URL(1).csv', 'w', newline='', encoding='UTF-8') as f:
@@ -91,17 +120,30 @@ def enter_urls_in_csv(final_product_links):
 
 
 def main(search_term):
+    """
+    Main function to execute the script
+    
+    Args:
+        search_term (str): Search term for generating the URL and extracting product URLs
 
+    Returns:
+        None
+    """
+    # Generating the search URL and retrieving total pages using the search term
     [url, t_pages] = get_search_url(search_term)
 
+    # Extracting product URLs from the search results pages using the generated URL and total pages
     final_product_links = extract_product_url(url, t_pages)
 
+    # Entering the extracted product URLs into a CSV file
     enter_urls_in_csv(final_product_links)
 
 
-
+# Initializing the Chrome WebDriver
 driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
 
+# Executing the main function with a sample search term
 main("bluetoothhandfree-apple")
 
+# Closing the WebDriver
 driver.close()
