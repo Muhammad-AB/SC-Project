@@ -6,11 +6,27 @@ import time
 import pandas as pd
 
 def initialize_driver():
-    """Initialize and return a Chrome webdriver."""
+    """
+    Initialize and return a Chrome webdriver.
+
+    Parameters:
+        None
+
+    Returns:
+        webdriver.Chrome: An instance of the Chrome webdriver.
+    """
     return webdriver.Chrome(executable_path=ChromeDriverManager().install())
 
 def scroll_page(driver):
-    """Scroll the page to load additional content."""
+    """
+    Scroll the page to load additional content.
+
+    Parameters:
+        driver (webdriver.Chrome): An instance of the Chrome webdriver.
+
+    Returns:
+        None
+    """
     for i in range(1, 10):
         j = 500 * i
         script = 'window.scrollTo(0, ' + str(j) + ');'
@@ -18,7 +34,15 @@ def scroll_page(driver):
         time.sleep(1)
 
 def click_view_more_button(driver):
-    """Click the 'View More' button if available."""
+    """
+    Click the 'View More' button if available.
+
+    Parameters:
+        driver (webdriver.Chrome): An instance of the Chrome webdriver.
+
+    Returns:
+        None
+    """
     try:
         button = driver.find_element(By.CLASS_NAME, "pdp-view-more-btn")
         button.click()
@@ -27,7 +51,15 @@ def click_view_more_button(driver):
         pass
 
 def get_soup(driver):
-    """Return BeautifulSoup object from the current page source."""
+    """
+    Return BeautifulSoup object from the current page source.
+
+    Parameters:
+        driver (webdriver.Chrome): An instance of the Chrome webdriver.
+
+    Returns:
+        BeautifulSoup or None: BeautifulSoup object representing the page source or None if an exception occurs.
+    """
     try:
         page_src = driver.page_source
         return BeautifulSoup(page_src, 'html.parser')
@@ -35,7 +67,15 @@ def get_soup(driver):
         return None
 
 def extract_product_details(soup):
-    """Extract product details from the BeautifulSoup object."""
+    """
+    Extract product details from the BeautifulSoup object.
+
+    Parameters:
+        soup (BeautifulSoup): BeautifulSoup object representing the page source.
+
+    Returns:
+        dict: A dictionary containing extracted product details.
+    """
     title = soup.find('span', class_='pdp-mod-product-badge-title').text if soup else ''
     oprice = soup.find('span', class_='pdp-price pdp-price_type_deleted pdp-price_color_lightgray pdp-price_size_xs').text if soup else ''
     dprice = soup.find('span', class_='pdp-price pdp-price_type_normal pdp-price_color_orange pdp-price_size_xl').text if soup else ''
@@ -50,7 +90,6 @@ def extract_product_details(soup):
     scoremax = soup.find('span', class_='score-max').text if soup else ''
     count = soup.find('div', class_='count').text if soup else ''
     reviews_list = [review.text for review in soup.findAll('div', class_='content')[1:]] if soup else []
-    details = soup.find('div', class_='html-content pdp-product-highlights').text if soup else ''
     recommended_products_list = [recommended_product.get("href") for recommended_product in soup.findAll('a', class_='product-item-link')] if soup else []
     recommended_products_img_list = [recommended_product_img.get("src") for recommended_product_img in soup.findAll('img', class_='image')] if soup else ''
 
@@ -74,6 +113,15 @@ def extract_product_details(soup):
     }
 
 def main():
+    """
+    Main function to execute the web scraping process and save results to an Excel file.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     df = pd.read_excel('test.xlsx')
     filename = "test.txt"
     file = open(filename, "r")
@@ -102,6 +150,7 @@ def main():
                "title": product_details['title'],
                "original_price": product_details['original_price'],
                'Discounted Price': product_details['Discounted Price'],
+               'Currency': currency,
                'Discount': product_details['Discount'],
                'Address': product_details['Address'],
                'Delivery Details': product_details['Delivery Details'],
