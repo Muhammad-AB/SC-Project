@@ -1,3 +1,10 @@
+# Script: Product URL Scraper
+# Author: Syed Ahsan Ullah Tanweer
+# Date: 16/12/2023
+
+# Script to extract product details from a list of URLs and store them in an excel file
+# Uses Selenium, BeautifulSoup, and ChromeDriverManager for web scraping
+
 from bs4 import BeautifulSoup
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
