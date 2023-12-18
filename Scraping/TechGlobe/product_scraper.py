@@ -1,4 +1,9 @@
+# Script: Product Details Scraper
+# Author: Syed Ahsan Ullah Tanweer
+# Date: 16/12/2023
 
+# Script to extract product details from a list of URLs and store them in a json file
+# Uses Selenium, BeautifulSoup, and ChromeDriverManager for web scraping
 
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
