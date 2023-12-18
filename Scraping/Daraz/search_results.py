@@ -1,3 +1,10 @@
+# Script: Product URL Scraper
+# Author: Syed Ahsan Ullah Tanweer
+# Date: 16/12/2023
+
+# Script to extract product URLs for a given category and store them in a txt file
+# Uses Selenium and ChromeDriverManager for web scraping
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
