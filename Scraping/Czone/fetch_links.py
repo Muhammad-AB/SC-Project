@@ -13,41 +13,46 @@ import time
 
 def fetch(driver, category_name, category_url):
     """
-    Fetch product links from a given category URL and save them to a text file.
+    Fetch product links from a given category URL using Selenium and save them to a text file.
 
     Parameters:
-        driver (webdriver): Selenium webdriver instance.
-        category_name (str): Name of the product category.
-        category_url (str): URL of the product category.
+        driver (webdriver): An instance of the Selenium webdriver.
+        category_name (str): The name of the product category.
+        category_url (str): The URL of the product category.
 
     Returns:
         None
     """
-    # Navigations
-    print(f"Trying {category_url} at {time.ctime()}") 
-    driver.get(category_url)
+    try:
+        # Navigations
+        print(f"Trying {category_url} at {time.ctime()}")
+        driver.get(category_url)
 
-    # Click on dropdown to show more results per page
-    driver.find_element(By.CSS_SELECTOR, "#ddlResults").click()
-    driver.find_element(By.CSS_SELECTOR, "#ddlResults > option:nth-child(6)").click()
+        # Click on dropdown to show more results per page
+        driver.find_element(By.CSS_SELECTOR, "#ddlResults").click()
+        driver.find_element(By.CSS_SELECTOR, "#ddlResults > option:nth-child(6)").click()
 
-    # Extract product links from the page
-    products = driver.find_elements(By.CSS_SELECTOR, "div > h4 > a")
-    links = []
+        # Extract product links from the page
+        products = driver.find_elements(By.CSS_SELECTOR, "div > h4 > a")
+        links = []
 
-    for product in products:
-        link = product.get_attribute("href")
+        for product in products:
+            link = product.get_attribute("href")
 
-        # Filter links ending with ".aspx" (irrelevant links)
-        if link[-5:] == ".aspx":
-            links.append(link)
+            # Filter links ending with ".aspx"
+            if link[-5:] == ".aspx":
+                links.append(link)
 
-    # Saving the Data
-    with open(f"cz_{category_name}_links.txt", 'a') as txt:
-        for link in links:
-            txt.write(f"\n{link}")
+        # Saving the Data
+        with open(f"cz_{category_name}_links.txt", 'a') as txt:
+            for link in links:
+                txt.write(f"\n{link}")
 
-    print(f"Collected {len(links)} products in Category: {category_name}")
+        print(f"Collected {len(links)} products in Category: {category_name}")
+
+    except Exception as e:
+        # Handle exceptions, e.g., NoSuchElementException
+        print(f"An error occurred: {str(e)}")
 
 # Define categories and their corresponding URLs
 CATEGORIES = {
