@@ -11,17 +11,42 @@ import json
 import time
 
 def initialize_browser():
-    """Initialize and return a Chrome webdriver."""
+    """
+    Initialize and return a Chrome webdriver.
+
+    Parameters:
+    None
+
+    Returns:
+    webdriver.Chrome: Initialized Chrome webdriver
+    """
     browser = webdriver.Chrome(executable_path=ChromeDriverManager().install())
     browser.maximize_window()
     return browser
 
 def scroll_to_bottom(browser):
-    """Scroll to the bottom of the page."""
+    """
+    Scroll to the bottom of the page.
+
+    Parameters:
+    browser (webdriver.Chrome): Chrome webdriver
+
+    Returns:
+    None
+    """
     ActionChains(browser).send_keys_to_element(browser.find_element(By.TAG_NAME, "body"), Keys.END).perform()
 
 def scrape_product_details(link, browser):
-    """Scrape product details from the given link."""
+    """
+    Scrape product details from the given link.
+
+    Parameters:
+    link (str): URL of the product
+    browser (webdriver.Chrome): Chrome webdriver
+
+    Returns:
+    dict: Product details
+    """
     print(f"Trying {link} at {time.ctime()}")
     browser.get(link)
     scroll_to_bottom(browser)
@@ -139,7 +164,16 @@ def scrape_product_details(link, browser):
             }
 
 def extract_specifications(soup, category):
-    """Extract specifications based on the product category."""
+    """
+    Extract specifications based on the product category.
+
+    Parameters:
+    soup (BeautifulSoup): BeautifulSoup object of the product page
+    category (str): Product category
+
+    Returns:
+    dict: Specifications of the product
+    """
     specs = dict({})
 
     highlights = soup.find('div', id = "divProductHighlights").find_all("li")
@@ -233,7 +267,16 @@ def extract_specifications(soup, category):
     return specs
 
 def save_to_json(data, category):
-    """Save the data to a JSON file."""
+    """
+    Save the data to a JSON file.
+
+    Parameters:
+    data (list): List of product details
+    category (str): Product category
+
+    Returns:
+    None
+    """
     with open(f"cz_{category}.json", "w") as file:
         json.dump(data, file, indent=4)
 
