@@ -1,4 +1,4 @@
-# Script: Product URL Scraper
+# Script: Product Details Scraper
 # Author: Syed Ahsan Ullah Tanweer
 # Date: 16/12/2023
 
