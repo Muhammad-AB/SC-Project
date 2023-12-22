@@ -8,6 +8,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
+import chromedriver_autoinstaller
 
 def initialize_driver():
     """
@@ -16,9 +17,9 @@ def initialize_driver():
     Returns:
     webdriver.Chrome: Initialized Chrome webdriver
     """
-    service = Service('./chromedriver.exe')
-    driver = webdriver.Chrome(service=service)
-    driver.maximize_window()
+    # Create an instance of Chrome webdriver
+    chromedriver_autoinstaller.install()
+    driver = webdriver.Chrome()
     return driver
 
 def get_phone_links(category, num_pages):
@@ -64,7 +65,7 @@ def save_links_to_file(links, filename):
 
 def main():
     category = "smartphones"
-    num_pages = 19  # Adjust the number of pages as needed
+    num_pages = 4  # Adjust the number of pages as needed
     output_file = f"{category}_links.txt"
 
     phone_links = get_phone_links(category, num_pages)

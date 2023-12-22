@@ -6,11 +6,13 @@
 # Uses Selenium, BeautifulSoup, and ChromeDriverManager for web scraping
 
 from bs4 import BeautifulSoup
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 import pandas as pd
+import chromedriver_autoinstaller
+from openpyxl import Workbook
 
 def initialize_driver():
     """
@@ -22,7 +24,10 @@ def initialize_driver():
     Returns:
         webdriver.Chrome: An instance of the Chrome webdriver.
     """
-    return webdriver.Chrome(executable_path=ChromeDriverManager().install())
+    # Create an instance of Chrome webdriver
+    chromedriver_autoinstaller.install()
+    driver = webdriver.Chrome()
+    return driver
 
 def scroll_page(driver):
     """
@@ -83,23 +88,98 @@ def extract_product_details(soup):
     Returns:
         dict: A dictionary containing extracted product details.
     """
-    title = soup.find('span', class_='pdp-mod-product-badge-title').text if soup else ''
-    oprice = soup.find('span', class_='pdp-price pdp-price_type_deleted pdp-price_color_lightgray pdp-price_size_xs').text if soup else ''
-    dprice = soup.find('span', class_='pdp-price pdp-price_type_normal pdp-price_color_orange pdp-price_size_xl').text if soup else ''
-    discount = soup.find('span', class_='pdp-product-price__discount').text if soup else ''
-    address = soup.find('div', class_='location__address').text if soup else ''
-    dedetails_list = [dedetail.text for dedetail in soup.findAll('div', class_='delivery-option-item__title')] if soup else []
-    deltime = soup.find('div', class_='delivery-option-item__time').text if soup else ''
-    delfee = soup.find('div', class_='delivery-option-item__shipping-fee').text if soup else ''
-    img = soup.find('img', class_='pdp-mod-common-image gallery-preview-panel__image').get("src") if soup else ''
-    brand = soup.find('a', class_='pdp-link pdp-link_size_s pdp-link_theme_blue pdp-product-brand__brand-link').text if soup else ''
-    scoreavg = soup.find('span', class_='score-average').text if soup else ''
-    scoremax = soup.find('span', class_='score-max').text if soup else ''
-    count = soup.find('div', class_='count').text if soup else ''
-    reviews_list = [review.text for review in soup.findAll('div', class_='content')[1:]] if soup else []
-    recommended_products_list = [recommended_product.get("href") for recommended_product in soup.findAll('a', class_='product-item-link')] if soup else []
-    recommended_products_img_list = [recommended_product_img.get("src") for recommended_product_img in soup.findAll('img', class_='image')] if soup else ''
+    try:
+        title = soup.find('span', class_ = 'pdp-mod-product-badge-title').text
+    except:
+        title = ''
+    
+    try:
+        oprice = soup.find('span', class_ = 'pdp-price pdp-price_type_deleted pdp-price_color_lightgray pdp-price_size_xs').text
+    except:
+        oprice = ''
+    
+    try:
+        dprice = soup.find('span', class_ = 'pdp-price pdp-price_type_normal pdp-price_color_orange pdp-price_size_xl').text
+    except:
+        dprice = ''
+    
+    try:
+        discount = soup.find('span', class_ = 'pdp-product-price__discount').text
+    except:
+        discount = ''
+    
+    try:
+        address = soup.find('div', class_ = 'location__address').text
+    except:
+        address = ""
 
+    try:
+        dedetails_list = []
+        dedetails = soup.findAll('div', class_ = 'delivery-option-item__title')
+        for dedetail in dedetails:
+            dedetails_list.append(dedetail.text)
+    except:
+        dedetails_list = []
+    
+    try:
+        deltime = soup.find('div', class_ = 'delivery-option-item__time').text
+    except:
+        deltime = ''
+    
+    try:
+        delfee = soup.find('div', class_ = 'delivery-option-item__shipping-fee').text
+    except:
+        delfee = ''
+    
+    try:
+        img = soup.find('img', class_ = 'pdp-mod-common-image gallery-preview-panel__image').get("src")
+    except:
+        img = ''
+    
+    try:
+        brand = soup.find('a', class_ = 'pdp-link pdp-link_size_s pdp-link_theme_blue pdp-product-brand__brand-link').text
+    except:
+        brand = ''
+    
+    try:
+        scoreavg = soup.find('span', class_ = 'score-average').text
+    except:
+        scoreavg = ''
+    
+    try:
+        scoremax = soup.find('span', class_ = 'score-max').text
+    except:
+        scoremax  = ''
+    
+    try:
+        count = soup.find('div', class_ = 'count').text
+    except:
+        count = ''
+    
+    try:
+        reviews_list = []
+        reviews = soup.findAll('div', class_ = 'content')[1:]
+        for review in reviews:
+            reviews_list.append(review.text)
+    except:
+        reviews_list = []
+    
+    try:
+        recommended_products_list = []
+        recommended_products = soup.findAll('a', class_ = 'product-item-link')
+        for recommended_product in recommended_products:
+            recommended_products_list.append(recommended_product.get("href"))
+    except:
+        recommended_products_list = []
+        
+    try:
+        recommended_products_img_list = []
+        recommended_products_img = soup.findAll('img', class_ = 'image')
+        for recommended_product_img in recommended_products_img:
+            recommended_products_img_list.append(recommended_product_img.get("src"))
+    except:
+        recommended_products_list = []
+    
     return {
         "title": title,
         "original_price": oprice,
@@ -129,8 +209,16 @@ def main():
     Returns:
         None
     """
-    df = pd.read_excel('test.xlsx')
-    filename = "test.txt"
+    file_path = 'test.xlsx'
+    try:
+        df = pd.read_excel(file_path)
+    except FileNotFoundError:
+        # If the file doesn't exist, create it and write an empty DataFrame to it
+        df = pd.DataFrame()
+        df.to_excel(file_path, index=False)
+        print(f"Created {file_path}")
+        df = pd.read_excel(file_path)
+    filename = "smartphones_links.txt"
     file = open(filename, "r")
     driver = initialize_driver()
 
@@ -154,26 +242,26 @@ def main():
             currency = "PKR"
 
         row = {"slug": url,
-               "title": product_details['title'],
-               "original_price": product_details['original_price'],
-               'Discounted Price': product_details['Discounted Price'],
-               'Currency': currency,
-               'Discount': product_details['Discount'],
-               'Address': product_details['Address'],
-               'Delivery Details': product_details['Delivery Details'],
-               'Delivery Time': product_details['Delivery Time'],
-               'Delivery Fee': product_details['Delivery Fee'],
-               'Image': product_details['Image'],
-               'Brand': product_details['Brand'],
-               'Avg Score': product_details['Avg Score'],
-               'Max Score': product_details['Max Score'],
-               'Count': product_details['Count'],
-               'Reviews': product_details['Reviews'],
-               'Recommended Products': product_details['Recommended Products'],
-               'Recommended Products Images': product_details['Recommended Products Images']
-               }
+                "title": product_details['title'],
+                "original_price": product_details['original_price'],
+                'Discounted Price': product_details['Discounted Price'],
+                'Currency': currency,
+                'Discount': product_details['Discount'],
+                'Address': product_details['Address'],
+                'Delivery Details': product_details['Delivery Details'],
+                'Delivery Time': product_details['Delivery Time'],
+                'Delivery Fee': product_details['Delivery Fee'],
+                'Image': product_details['Image'],
+                'Brand': product_details['Brand'],
+                'Avg Score': product_details['Avg Score'],
+                'Max Score': product_details['Max Score'],
+                'Count': product_details['Count'],
+                'Reviews': product_details['Reviews'],
+                'Recommended Products': product_details['Recommended Products'],
+                'Recommended Products Images': product_details['Recommended Products Images']
+                }
 
-        df = df.append(row, ignore_index=True)
+        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
         df.to_excel('test.xlsx', index=False)
         url = file.readline()
 

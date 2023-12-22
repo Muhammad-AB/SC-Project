@@ -6,7 +6,7 @@
 # Uses Selenium, BeautifulSoup, and ChromeDriverManager for web scraping
 
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
@@ -16,6 +16,7 @@ from bs4 import BeautifulSoup
 import re
 import json
 import time
+import chromedriver_autoinstaller
 
 def initialize_browser():
     """
@@ -27,9 +28,10 @@ def initialize_browser():
     Returns:
     webdriver.Chrome: Initialized Chrome webdriver
     """
-    browser = webdriver.Chrome(executable_path=ChromeDriverManager().install())
-    browser.maximize_window()
-    return browser
+    # Create an instance of Chrome webdriver
+    chromedriver_autoinstaller.install()
+    driver = webdriver.Chrome()
+    return driver
 
 def scroll_to_bottom(browser):
     """
@@ -139,6 +141,7 @@ def scrape_product_details(link, browser):
         num_ratings = None    
         reviews = None
     last_updated = time.ctime()
+    highlights = soup.find('div', id = "divProductHighlights").find_all("li")
 
     return {
                 "slug":link,
@@ -168,9 +171,9 @@ def scrape_product_details(link, browser):
                 "used":1 if "used" in soup.find('h1', id = "spnProductName").text.strip().lower() else 0,
                 "warranty_type":warranty_type,
                 "delivery_details":None
-            }
+            }, highlights
 
-def extract_specifications(soup, category):
+def extract_specifications(highlights, category):
     """
     Extract specifications based on the product category.
 
@@ -183,7 +186,6 @@ def extract_specifications(soup, category):
     """
     specs = dict({})
 
-    highlights = soup.find('div', id = "divProductHighlights").find_all("li")
     specs["Processor Type"] = highlights[0].text
     mem = highlights[1].text.split(', ')
     if len(mem) < 2:
@@ -300,8 +302,8 @@ def main():
             browser = initialize_browser()
 
             while link:
-                product_details = scrape_product_details(link, browser)
-                specifications = extract_specifications(product_details, category)
+                product_details, highlights = scrape_product_details(link, browser)
+                specifications = extract_specifications(highlights, category)
                 product_details["specifications"] = specifications
                 product_details["category"] = category
                 data.append(product_details)

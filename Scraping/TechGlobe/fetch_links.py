@@ -7,7 +7,8 @@
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager
+import chromedriver_autoinstaller
 import time
 
 def initialize_driver():
@@ -17,8 +18,9 @@ def initialize_driver():
     Returns:
     webdriver.Chrome: Initialized Chrome webdriver
     """
-    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
-    driver.maximize_window()
+    # Create an instance of Chrome webdriver
+    chromedriver_autoinstaller.install()
+    driver = webdriver.Chrome()
     return driver
 
 def fetch_category_links(driver, category_name, category_url):
@@ -54,11 +56,11 @@ def fetch_category_links(driver, category_name, category_url):
 def main():
     CATEGORIES = {
         "laptops": "https://www.techglobe.pk/laptops",
-        "headsets": "https://www.techglobe.pk/headphones-earphones",
-        "speakers": "https://www.techglobe.pk/speakers",
-        "cameras": "https://www.techglobe.pk/cameras",
-        "mouse": "https://www.techglobe.pk/mouse",
-        "keyboard": "https://www.techglobe.pk/keyboard"
+        # "headsets": "https://www.techglobe.pk/headphones-earphones",
+        # "speakers": "https://www.techglobe.pk/speakers",
+        # "cameras": "https://www.techglobe.pk/cameras",
+        # "mouse": "https://www.techglobe.pk/mouse",
+        # "keyboard": "https://www.techglobe.pk/keyboard"
     }
 
     # Create an instance of Chrome webdriver
