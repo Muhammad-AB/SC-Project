@@ -13,6 +13,7 @@ from selenium.common.exceptions import TimeoutException as TE
 # from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
+import chromedriver_autoinstaller
 import csv 
 import json
 import time
@@ -32,7 +33,7 @@ def extract_product_details(url, f_product_details):
     
     print("Entered extract detail function")
     
-    for i in range(1, 195):
+    for i in range(1, len(url)-1):
 
         print("\n"+str(i)+"- Entered for loop")
 
@@ -200,12 +201,17 @@ def extract_product_details(url, f_product_details):
             writer.writerow(data)
         
 
-# Initializing the Chrome WebDriver
-driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+# # Initializing the Chrome WebDriver
+# driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+chromedriver_autoinstaller.install()
+
+# Create a WebDriver instance
+driver = webdriver.Chrome()
+
 
 # File names
-f_product_url = 'Laptops_URL(1).csv'   #Name of csv file in which URLs are stored
-f_product_details = "Mega.pk Laptops.csv"   #Name of csv file in which you want to store product details
+f_product_url = 'D:/Muhammad AB/NUST/5th Semester/Software Construction/Project/SC-Project/Apple Airpods_URL(1).csv'   #Name of csv file in which URLs are stored
+f_product_details = "Mega.pk Bluethothhandfree.csv"   #Name of csv file in which you want to store product details
 
 # Reading URLs from CSV file
 file = open(f_product_url)

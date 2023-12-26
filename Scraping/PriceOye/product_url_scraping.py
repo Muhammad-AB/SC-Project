@@ -7,8 +7,14 @@
 
 # Importing required libraries
 from selenium import webdriver   # basic driver type
-from webdriver_manager.chrome import ChromeDriverManager
+# from selenium.webdriver.chrome.service import Service
+# from selenium.webdriver.chrome.options import Options
+
+# from webdriver_manager.chrome import ChromeDriverManager
+
+from webdriver_manager import *
 from bs4 import BeautifulSoup
+import chromedriver_autoinstaller
 import csv 
 
 
@@ -37,11 +43,15 @@ def get_search_url(search_term):
     driver.get(url)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     t_pages = soup.find('div', class_="pagination")
-    #print("Total Pages: ", t_pages)
+    # print("Total Pages: ", t_pages)
     t_pages = t_pages.find_all('a', href = True)
-    #print("Total Pages: ", t_pages)
+    # print("Total Pages: ", t_pages)
     t_pages = t_pages[len(t_pages)-2].text
-    t_pages = int(t_pages)
+    try:
+        t_pages = int(t_pages)
+    except:
+        t_pages = 1
+        pass
     print("Total Pages: ", t_pages)
 
     url+="?page={}"
@@ -134,7 +144,21 @@ def main(search_term):
 
 
 # Initializing the Chrome WebDriver
-driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+# driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+# driver = webdriver.Chrome(service=ChromeDriverManager().install())
+# driver = webdriver.Chrome(service=Service(ChromeDriverManager(version="120.0.6099.110").install()), options=options)
+# driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=Options)
+# Automatically download and install ChromeDriver
+chromedriver_autoinstaller.install()
+
+# Create a WebDriver instance
+driver = webdriver.Chrome()
+
+# driver = webdriver.Chrome(ChromeDriverManager().install())
+
+# driver = webdriver.Chrome(ChromeDriverManager().install())
+# driver = webdriver.Chrome(executable_path=ChromeDriverManager(wdm_chromedriver_version="latest").install())
+
 
 # Executing the main function with a sample search term
 main("wireless earbuds")

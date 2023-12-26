@@ -9,6 +9,7 @@
 from selenium import webdriver   # basic driver type
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
+import chromedriver_autoinstaller
 import csv 
 
 
@@ -139,8 +140,12 @@ def main(search_term):
     enter_urls_in_csv(final_product_links)
 
 
-# Initializing the Chrome WebDriver
-driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+# # Initializing the Chrome WebDriver
+# driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+chromedriver_autoinstaller.install()
+
+# Create a WebDriver instance
+driver = webdriver.Chrome()
 
 # Executing the main function with a sample search term
 main("bluetoothhandfree-apple")

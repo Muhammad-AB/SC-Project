@@ -13,6 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
+import chromedriver_autoinstaller
 import csv 
 import json
 
@@ -210,11 +211,13 @@ def extract_product_details(url, f_product_details):
             writer.writerow(data)
 
 
-# Initializing the Chrome WebDriver
-driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+chromedriver_autoinstaller.install()
+
+# Create a WebDriver instance
+driver = webdriver.Chrome()
 
 # CSV file names
-f_product_url = 'Wireless Earbuds_URL.csv'   #Name of csv file in which URLs are stored
+f_product_url = 'D:/Muhammad AB/NUST/5th Semester/Software Construction/Project/Wireless Earbuds_URL.csv'   #Name of csv file in which URLs are stored
 f_product_details = "PriceOye_Wireless Earbuds.csv"   #Name of csv file in which you want to store product details
 
 # Reading product URLs from the CSV file
